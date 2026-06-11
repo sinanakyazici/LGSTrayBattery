@@ -9,6 +9,18 @@ textColor = ""
 # Background color: "#RRGGBB" or a named color. Leave empty for transparent.
 backgroundColor = ""
 
+# Per-device color overrides (partial name match, case-insensitive)
+# [DeviceColor.PARTIAL_NAME]
+# textColor = "#RRGGBB"
+# backgroundColor = "#RRGGBB"
+
+[DeviceColor.G915]
+textColor = "#00FF88"
+backgroundColor = "#001A0D"
+
+[DeviceColor.SUPERLIGHT]
+textColor = "#FF6600"
+backgroundColor = "#1A0A00"
 
 [HTTPServer]
 enabled = true
