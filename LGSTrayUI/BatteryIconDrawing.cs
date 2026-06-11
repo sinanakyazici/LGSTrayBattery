@@ -126,7 +126,7 @@ namespace LGSTrayUI
             catch { return null; }
         }
 
-        public static void DrawNumeric(TaskbarIcon taskbarIcon, LogiDevice device, NumericDisplaySettings? settings = null)
+        public static void DrawNumeric(TaskbarIcon taskbarIcon, LogiDevice device, NumericDisplaySettings? settings = null, AppSettings? appSettings = null)
         {
             using Bitmap b = new(ImageSize, ImageSize);
             using Graphics g = Graphics.FromImage(b);
@@ -138,9 +138,13 @@ namespace LGSTrayUI
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 
+            var deviceOverride = appSettings?.FindDeviceOverride(device.DeviceName);
             float multiplier = settings?.FontSizeMultiplier ?? 0.8f;
-            Color textColor = TryParseColor(settings?.TextColor) ?? GetDeviceColor(device);
-            Color? bgColor = TryParseColor(settings?.BackgroundColor);
+            Color textColor = TryParseColor(deviceOverride?.TextColor)
+                           ?? TryParseColor(settings?.TextColor)
+                           ?? GetDeviceColor(device);
+            Color? bgColor = TryParseColor(deviceOverride?.BackgroundColor)
+                          ?? TryParseColor(settings?.BackgroundColor);
 
             if (bgColor.HasValue)
                 g.Clear(bgColor.Value);

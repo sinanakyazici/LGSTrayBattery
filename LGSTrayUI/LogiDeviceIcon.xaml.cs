@@ -105,7 +105,7 @@ namespace LGSTrayUI
 
         private Action<TaskbarIcon, LogiDevice> BuildDrawFunc(bool numeric) =>
             numeric
-                ? (tb, d) => BatteryIconDrawing.DrawNumeric(tb, d, _appSettings.NumericDisplay)
+                ? (tb, d) => BatteryIconDrawing.DrawNumeric(tb, d, _appSettings.NumericDisplay, _appSettings)
                 : BatteryIconDrawing.DrawIcon;
 
         private void NotifyIconViewModelPropertyChanged(object? s, PropertyChangedEventArgs e)

@@ -11,6 +11,20 @@ public class AppSettings
     public NativeDeviceManagerSettings Native { get; set; } = null!;
 
     public NumericDisplaySettings NumericDisplay { get; set; } = new();
+
+    // Keys are partial device name patterns (case-insensitive), e.g. "G915" matches "G915 X Lightspeed..."
+    public Dictionary<string, NumericDisplayDeviceOverride> DeviceColor { get; set; } = [];
+
+    public NumericDisplayDeviceOverride? FindDeviceOverride(string deviceName) =>
+        DeviceColor.FirstOrDefault(kvp =>
+            deviceName.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase)).Value;
+}
+
+public class NumericDisplayDeviceOverride
+{
+    // Empty = falls back to global NumericDisplay setting
+    public string TextColor { get; set; } = "";
+    public string BackgroundColor { get; set; } = "";
 }
 
 public class UISettings
