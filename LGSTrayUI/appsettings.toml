@@ -1,6 +1,15 @@
 [UI]
 enableRichToolTips = true
 
+[NumericDisplay]
+# Font size as a multiplier of the icon size (default: 0.8)
+fontSizeMultiplier = 0.8
+# Text color: "#RRGGBB" or a named color (e.g. "white"). Leave empty to use the system theme color.
+textColor = ""
+# Background color: "#RRGGBB" or a named color. Leave empty for transparent.
+backgroundColor = ""
+
+
 [HTTPServer]
 enabled = true
 addr = "localhost"

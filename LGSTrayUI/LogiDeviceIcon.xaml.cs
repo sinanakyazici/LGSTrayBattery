@@ -82,6 +82,7 @@ namespace LGSTrayUI
         public static event Action<int>? RefCountChanged;
 
         private Action<TaskbarIcon, LogiDevice> _drawBatteryIcon;
+        private readonly AppSettings _appSettings;
 
         public LogiDeviceIcon(LogiDevice device, AppSettings appSettings, UserSettingsWrapper userSettings)
         {
@@ -92,14 +93,20 @@ namespace LGSTrayUI
 
             AddRef();
 
+            _appSettings = appSettings;
             DataContext = device;
 
             device.PropertyChanged += LogiDevicePropertyChanged;
             userSettings.PropertyChanged += NotifyIconViewModelPropertyChanged;
             CheckTheme.StaticPropertyChanged += (_, _) => DrawBatteryIcon();
-            _drawBatteryIcon = userSettings.NumericDisplay ? BatteryIconDrawing.DrawNumeric : BatteryIconDrawing.DrawIcon;
+            _drawBatteryIcon = BuildDrawFunc(userSettings.NumericDisplay);
             DrawBatteryIcon();
         }
+
+        private Action<TaskbarIcon, LogiDevice> BuildDrawFunc(bool numeric) =>
+            numeric
+                ? (tb, d) => BatteryIconDrawing.DrawNumeric(tb, d, _appSettings.NumericDisplay)
+                : BatteryIconDrawing.DrawIcon;
 
         private void NotifyIconViewModelPropertyChanged(object? s, PropertyChangedEventArgs e)
         {
@@ -110,7 +117,7 @@ namespace LGSTrayUI
 
             if (e.PropertyName == nameof(UserSettingsWrapper.NumericDisplay))
             {
-                _drawBatteryIcon = userSettings.NumericDisplay ? BatteryIconDrawing.DrawNumeric : BatteryIconDrawing.DrawIcon;
+                _drawBatteryIcon = BuildDrawFunc(userSettings.NumericDisplay);
                 DrawBatteryIcon();
             }
         }

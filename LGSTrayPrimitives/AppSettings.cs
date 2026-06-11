@@ -1,4 +1,4 @@
-﻿namespace LGSTrayPrimitives;
+namespace LGSTrayPrimitives;
 
 public class AppSettings
 {
@@ -9,11 +9,22 @@ public class AppSettings
     public IDeviceManagerSettings GHub { get; set; } = null!;
 
     public NativeDeviceManagerSettings Native { get; set; } = null!;
+
+    public NumericDisplaySettings NumericDisplay { get; set; } = new();
 }
 
 public class UISettings
 {
     public bool EnableRichToolTips { get; set; }
+}
+
+public class NumericDisplaySettings
+{
+    public float FontSizeMultiplier { get; set; } = 0.8f;
+    // Empty string = use theme color; accepts "#RRGGBB" or named colors (e.g. "white")
+    public string TextColor { get; set; } = "";
+    // Empty string = transparent; accepts "#RRGGBB" or named colors
+    public string BackgroundColor { get; set; } = "";
 }
 
 public class HttpServerSettings

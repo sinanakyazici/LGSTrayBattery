@@ -8,6 +8,7 @@ using Hardcodet.Wpf.TaskbarNotification;
 using System.Runtime.InteropServices;
 using LGSTrayPrimitives;
 using Microsoft.Win32;
+using System.Drawing.Text;
 
 namespace LGSTrayUI
 {
@@ -117,16 +118,38 @@ namespace LGSTrayUI
             DestroyIcon(iconHandle);
         }
 
-        public static void DrawNumeric(TaskbarIcon taskbarIcon, LogiDevice device)
+        private static Color? TryParseColor(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+            try { return ColorTranslator.FromHtml(value); }
+            catch { return null; }
+        }
+
+        public static void DrawNumeric(TaskbarIcon taskbarIcon, LogiDevice device, NumericDisplaySettings? settings = null)
         {
             using Bitmap b = new(ImageSize, ImageSize);
             using Graphics g = Graphics.FromImage(b);
 
+            g.CompositingMode = CompositingMode.SourceOver;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+
+            float multiplier = settings?.FontSizeMultiplier ?? 0.8f;
+            Color textColor = TryParseColor(settings?.TextColor) ?? GetDeviceColor(device);
+            Color? bgColor = TryParseColor(settings?.BackgroundColor);
+
+            if (bgColor.HasValue)
+                g.Clear(bgColor.Value);
+
             string displayString = (device.BatteryPercentage < 0) ? "?" : $"{device.BatteryPercentage:f0}";
             g.DrawString(
                 displayString,
-                new Font("Segoe UI", (int)(0.8 * ImageSize), GraphicsUnit.Pixel),
-                new SolidBrush(GetDeviceColor(device)),
+                new Font("Segoe UI", (int)(multiplier * ImageSize), GraphicsUnit.Pixel),
+                new SolidBrush(textColor),
                 ImageSize / 2, ImageSize / 2,
                 new(StringFormatFlags.FitBlackBox, 0)
                 {
@@ -134,11 +157,6 @@ namespace LGSTrayUI
                     Alignment = StringAlignment.Center,
                 }
             );
-            g.CompositingMode = CompositingMode.SourceOver;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             IntPtr iconHandle = b.GetHicon();
             Icon tempManagedRes = Icon.FromHandle(iconHandle);
